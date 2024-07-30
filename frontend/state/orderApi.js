@@ -16,11 +16,20 @@ export const orderApi = createApi({
                 body: order
             }),
             invalidatesTags: ['Order']
+        }),
+        filterSize: build.mutation({
+            query: ({ size, hx }) => ({
+                url: `history/${size}`,
+                method: 'PUT',
+                body: hx
+            }),
+            invalidatesTags: ['History']
         })
     })
 })
 
 export const {
     useGetHistoryQuery,
-    useCreateOrderMutation
+    useCreateOrderMutation,
+    useFilterSizeMutation
 } = orderApi
