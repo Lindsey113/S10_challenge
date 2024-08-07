@@ -1,21 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-   pizzaSize: 'All'
-}
-
-export const orderSlice = createSlice({
-    name: 'order',
-    initialState,
+const orderSlice = createSlice({
+    name: 'filters',
+    initialState: {
+        pizzaSize: 'All'
+    },
     reducers: {
         selectSizeFilter(state, action) {
-            state.pizzaSize = action.payload
+           state.pizzaSize = action.payload
         }
     }
 })
 
-export const {
+export default orderSlice.reducer
+
+export const { 
     selectSizeFilter
 } = orderSlice.actions
-
-export default orderSlice.reducer

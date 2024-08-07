@@ -49,20 +49,20 @@ const chosenToppings = (toppings) => {
 export default function PizzaForm() {
   const [state, dispatch] = useReducer(reducer, initialFormState)
   const [createOrder, { error: createOrderError, isLoading: creatingOrder }] = useCreateOrderMutation()
-  
+
   const onNameChange = (e) => {
-    const {value} = e.target
-    dispatch({type: CHANGE_FULL_NAME, payload: value})
+    const { value } = e.target
+    dispatch({ type: CHANGE_FULL_NAME, payload: value })
   }
 
   const onSizeChange = (e) => {
-    const {value} = e.target
-    dispatch({type: SELECT_ORDER_SIZE, payload: value})
+    const { value } = e.target
+    dispatch({ type: SELECT_ORDER_SIZE, payload: value })
   }
 
   const chosenTopping = (e) => {
-    const {name} = e.target
-    dispatch({type: CHOOSE_TOPPINGS, payload: name})
+    const { name } = e.target
+    dispatch({ type: CHOOSE_TOPPINGS, payload: name })
   }
 
   const resetForm = () => {
@@ -70,19 +70,9 @@ export default function PizzaForm() {
   }
   const onNewOrder = evt => {
     evt.preventDefault()
-    const { fullName, size,
-      '1': pepperoni,
-      '2': greenPeppers,
-      '3': pineapple,
-      '4': mushrooms,
-      '5': ham } = state
+    const { fullName, size, toppings } = state
     createOrder({
-      fullName, size,
-      '1': pepperoni,
-      '2': greenPeppers,
-      '3': pineapple,
-      '4': mushrooms,
-      '5': ham
+      fullName, size, toppings: chosenToppings(toppings)
     })
       .unwrap()
       .then(() => {
@@ -95,8 +85,8 @@ export default function PizzaForm() {
   return (
     <form id='orderForm' onSubmit={onNewOrder}>
       <h2>Pizza Form</h2>
-      {true && <div className='pending'>{creatingOrder && creatingOrder.data.message}</div>}
-      {true && <div className='failure'>{createOrderError}</div>}
+      {creatingOrder && <div className='pending'>Order in progress...</div>}
+      {createOrderError && <div className='failure'>{createOrderError.data.message}</div>}
 
       <div className="input-group">
         <div>
@@ -106,7 +96,7 @@ export default function PizzaForm() {
             id="fullName"
             name="fullName"
             placeholder="Type full name"
-            onChange={onChange}
+            onChange={onNameChange}
             type="text"
             value={state.fullName}
           />
@@ -116,7 +106,7 @@ export default function PizzaForm() {
       <div className="input-group">
         <div>
           <label htmlFor="size">Size</label><br />
-          <select data-testid="sizeSelect" id="size" name="size" value={state.size}>
+          <select data-testid="sizeSelect" id="size" name="size" onChange={onSizeChange}>
             <option value="">----Choose size----</option>
             <option value="S">Small</option>
             <option value="M">Medium</option>
@@ -127,19 +117,19 @@ export default function PizzaForm() {
 
       <div className="input-group">
         <label>
-          <input data-testid="checkPepperoni" name="1" type="checkbox" />
+          <input data-testid="checkPepperoni" name="1" type="checkbox" onClick={chosenTopping} />
           Pepperoni<br /></label>
         <label>
-          <input data-testid="checkGreenpeppers" name="2" type="checkbox" />
+          <input data-testid="checkGreenpeppers" name="2" type="checkbox" onClick={chosenTopping} />
           Green Peppers<br /></label>
         <label>
-          <input data-testid="checkPineapple" name="3" type="checkbox" />
+          <input data-testid="checkPineapple" name="3" type="checkbox" onClick={chosenTopping} />
           Pineapple<br /></label>
         <label>
-          <input data-testid="checkMushrooms" name="4" type="checkbox" />
+          <input data-testid="checkMushrooms" name="4" type="checkbox" onClick={chosenTopping} />
           Mushrooms<br /></label>
         <label>
-          <input data-testid="checkHam" name="5" type="checkbox" />
+          <input data-testid="checkHam" name="5" type="checkbox" onClick={chosenTopping} />
           Ham<br /></label>
       </div>
       <input data-testid="submit" type="submit" />
