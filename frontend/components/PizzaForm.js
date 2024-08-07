@@ -1,45 +1,70 @@
 import React, { useReducer } from 'react'
 import { useCreateOrderMutation } from '../state/orderApi'
 
-const CHANGE_INPUT = 'CHANGE_INPUT'
+const CHANGE_FULL_NAME = 'CHANGE_FULL_NAME'
+const SELECT_ORDER_SIZE = 'SELECT_ORDER_SIZE'
+const CHOOSE_TOPPINGS = 'CHOOSE_TOPPINGS'
 const RESET_FORM = 'RESET_FORM'
 
 const initialFormState = { // suggested
   fullName: '',
   size: '',
-  '1': false,
-  '2': false,
-  '3': false,
-  '4': false,
-  '5': false,
+  toppings: {
+    '1': false,
+    '2': false,
+    '3': false,
+    '4': false,
+    '5': false,
+  }
+
 }
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case CHANGE_INPUT: {
-      const { name, value } = action.payload
-      return { ...state, [name]: value }
+    case CHANGE_FULL_NAME: {
+      return { ...state, fullName: action.payload }
+    }
+    case SELECT_ORDER_SIZE: {
+      return { ...state, size: action.payload }
+    }
+    case CHOOSE_TOPPINGS: {
+      return {
+        ...state, toppings: {
+          ...state.toppings,
+          [action.payload]: !state.toppings[action.payload]
+        }
+      }
     }
     case RESET_FORM:
-      return {
-        fullName: '',
-        size: '',
-        '1': false,
-        '2': false,
-        '3': false,
-        '4': false,
-        '5': false,
-      }
-    default: return state
+      return initialFormState
+    default:
+      return state
   }
+}
+
+const chosenToppings = (toppings) => {
+  return Object.keys(toppings).filter(topping => toppings[topping])
 }
 
 export default function PizzaForm() {
   const [state, dispatch] = useReducer(reducer, initialFormState)
   const [createOrder, { error: createOrderError, isLoading: creatingOrder }] = useCreateOrderMutation()
-  const onChange = ({ target: { name, value } }) => {
-    dispatch({ type: CHANGE_INPUT, payload: { name, value } })
+  
+  const onNameChange = (e) => {
+    const {value} = e.target
+    dispatch({type: CHANGE_FULL_NAME, payload: value})
   }
+
+  const onSizeChange = (e) => {
+    const {value} = e.target
+    dispatch({type: SELECT_ORDER_SIZE, payload: value})
+  }
+
+  const chosenTopping = (e) => {
+    const {name} = e.target
+    dispatch({type: CHOOSE_TOPPINGS, payload: name})
+  }
+
   const resetForm = () => {
     dispatch({ type: RESET_FORM })
   }

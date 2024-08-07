@@ -3,11 +3,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const orderApi = createApi({
     reducerPath: 'orderApi',
     baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:9009/api/pizza/'}),
-    tagTypes: ['History', 'Order'],
+    tagTypes: ['Orders'],
     endpoints: build => ({
-        getHistory: build.query({
+        getOrders: build.query({
             query: () => 'history',
-            providesTags: ['History']
+            providesTags: ['Orders']
         }),
         createOrder: build.mutation({
             query: order => ({
@@ -17,19 +17,11 @@ export const orderApi = createApi({
             }),
             invalidatesTags: ['Order']
         }),
-        filterSize: build.mutation({
-            query: ({ size, hx }) => ({
-                url: `history/${size}`,
-                method: 'PUT',
-                body: hx
-            }),
-            invalidatesTags: ['History']
-        })
+        
     })
 })
 
 export const {
-    useGetHistoryQuery,
-    useCreateOrderMutation,
-    useFilterSizeMutation
+    useGetOrdersQuery,
+    useCreateOrderMutation
 } = orderApi
