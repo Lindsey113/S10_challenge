@@ -1,22 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit'
+import pizzaReducer from './pizzaSlice'
 import orderReducer from './orderSlice'
-import { orderApi } from './orderApi'
-
-// const exampleReducer = (state = { count: 0 }) => {
-//   return state
-// }
+import filterReducer from './filterSlice'
+//import { getDefaultNormalizer } from '@testing-library/react'
 
 export const resetStore = () => configureStore({
   reducer: {
-    orderState: orderReducer,
-   [orderApi.reducerPath]: orderApi.reducer
+    pizza: pizzaReducer,
+    pizzaOrder: orderReducer,
+    sizeFilter: filterReducer
   },
-  
-    // if using RTK Query for your networking: add your middleware here
-    // if using Redux Thunk for your networking: you can ignore this
-    middleware: getDefault => getDefault().concat(
-    orderApi.middleware
-  ),
+  middleware: getDefaultMiddleware => getDefaultMiddleware()
 })
 
 export const store = resetStore()
+export default store

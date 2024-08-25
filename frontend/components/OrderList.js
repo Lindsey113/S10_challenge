@@ -1,55 +1,56 @@
-import React from 'react'
-import { selectSizeFilter } from '../state/orderSlice'
-import { useSelector, useDispatch } from 'react-redux'
-import { useGetOrdersQuery } from '../state/orderApi'
+import React, { useEffect } from 'react'
+import { fetchPizzaHx } from '../state/pizzaSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { setSizeFilter, filterHistory } from '../state/filterSlice'
 
 export default function OrderList() {
-  const {data: orders} = useGetOrdersQuery()
-  const currentSize = useSelector(st => st.filters.pizzaSize)
+
   const dispatch = useDispatch()
+  const loading = useSelector(state => state.pizza.loading)
+  const error = useSelector(state => state.pizza.error)
+  const pizzaSize = useSelector(state => state.pizza.sizeFilter)
+  const history = useSelector(filterHistory)
 
-  const filteredOrderList = currentSize === 'All'
-  ? orders : orders?.filter(order => order.size === currentSize)
+  useEffect(() => {
+    dispatch(fetchPizzaHx())
+  }, [dispatch])
 
-  const numberOfToppings = (toppings) => {
-    if(!toppings){
-      return 'no toppings'
-    } else if(toppings.length === 1) {
-      return '1 topping'
-    } else {
-      return `${toppings.length} toppings`
-    }
+  const clickHandler = (size) => {
+    dispatch(setSizeFilter(size))
   }
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Error: {error}</div>
 
   return (
     <div id="orderList">
       <h2>Pizza Orders</h2>
       <ol>
-      { filteredOrderList?.map((order) => {
-            const { customer, id, size, toppings } = order
-            return (
-              <li key={id}>
-                <div>
-                {`${customer} ordered a size ${size} with ${numberOfToppings(toppings)}`}
-                </div>
-              </li>
-            )
-          })
-        }
+        {history.map((pizza, index) => (
+          <li key={index}>
+            <div>
+              {pizza.customer} ordered a size {pizza.size} with {' '}
+              {pizza.toppings && pizza.toppings.length > 0
+                ? pizza.toppings.length
+                : 'no'}{' '}
+              toppings
+            </div>
+          </li>
+        ))}
       </ol>
       <div id="sizeFilters">
         Filter by size:
         {
           ['All', 'S', 'M', 'L'].map(size => {
-            const className = `button-filter${size === 'All' ? ' active' : ''}`
-            return <button
-              data-testid={`filterBtn${size}`}
-              className={className}
-              key={size}
-              onClick={() => {
-                dispatch(selectSizeFilter(size))
-              }}
-              >{size}</button>
+            const className = `button-filter${size === pizzaSize ? ' active' : ''}`
+            return (
+              <button
+                data-testid={`filterBtn${size}`}
+                className={className}
+                onClick={() => clickHandler(size)}
+                key={size}>{size}</button>
+            )
+
           })
         }
       </div>
